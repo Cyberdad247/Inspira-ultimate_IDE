@@ -1,0 +1,925 @@
+Here’s a complete, ready-to-drop set of documents and components. Each file is provided as a separate block so you can copy them into your repo 1:1. Where code assumes a build tool, I included quick run notes.
+
+File: SymbolectEngine.jsx
+```jsx
+import React, { useMemo, useState } from "react";
+
+/**
+ * SymbolectEngine
+ * - Compresses NL into glyphs + tags
+ * - Small editable lexicon
+ * - Copy-to-clipboard helpers
+ */
+const DEFAULT_LEXICON = {
+  add: "➕",
+  remove: "➖",
+  update: "♻️",
+  toggle: "🔀",
+  theme: "🎨",
+  dark: "🌙",
+  light: "☀️",
+  mode: "🌙",
+  test: "🧪",
+  tests: "🧪",
+  secure: "🛡️",
+  security: "🛡️",
+  build: "🏗️",
+  deploy: "🚀",
+  revert: "↩️",
+  plan: "🧭",
+  goal: "🎯",
+  local: "💻",
+  burst: "⚡",
+  cost: "💰",
+  zero: "🚫",
+};
+
+function compress(text, lex) {
+  const tokens = text
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}\s_-]/gu, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const glyphs = [];
+  const used = [];
+  for (const t of tokens) {
+    const g = lex[t];
+    if (g) {
+      glyphs.push(g);
+      used.push({ token: t, glyph: g });
+    }
+  }
+  const uniqGlyphs = [...new Set(glyphs)];
+  return { glyphs: uniqGlyphs, used };
+}
+
+function tagsFromGlyphs(glyphs) {
+  const map = {
+    "🌙": ["Feature.DarkMode.Toggle", "UI.ThemeProvider"],
+    "🧪": ["Test.Unit", "Test.Integration"],
+    "🛡️": ["Policy.ZeroTrust", "Sentinel.RuleSet"],
+    "⚡": ["Router.Burst", "Provider.Gemini"],
+    "💻": ["Execution.LocalFirst"],
+  };
+  const tags = new Set();
+  glyphs.forEach((g) => (map[g] || []).forEach((t) => tags.add(t)));
+  return [...tags];
+}
+
+export default function SymbolectEngine({ initial = "Add a dark mode toggle and tests" }) {
+  const [input, setInput] = useState(initial);
+  const [lex, setLex] = useState(DEFAULT_LEXICON);
+  const { glyphs, used } = useMemo(() => compress(input, lex), [input, lex]);
+  const tags = useMemo(() => tagsFromGlyphs(glyphs), [glyphs]);
+
+  function addMap(k, v) {
+    if (!k || !v) return;
+    setLex((prev) => ({ ...prev, [k.toLowerCase()]: v }));
+  }
+
+  async function copy(txt) {
+    try {
+      await navigator.clipboard.writeText(txt);
+    } catch {}
+  }
+
+  return (
+    <section className="card">
+      <header className="card-head">
+        <h3>Symbolect Engine</h3>
+        <div className="muted">NL → glyphs • compression • anchors</div>
+      </header>
+
+      <label className="label">Natural language</label>
+      <textarea
+        className="input"
+        rows={3}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Describe your task…"
+      />
+
+      <div className="row">
+        <div className="col">
+          <label className="label">Glyphs</label>
+          <div className="glyphs">{glyphs.join(" ") || "—"}</div>
+          <button className="btn" onClick={() => copy(glyphs.join(" "))}>
+            Copy glyphs
+          </button>
+        </div>
+        <div className="col">
+          <label className="label">KG Tags (anchors)</label>
+          <ul className="list">
+            {tags.length ? tags.map((t) => <li key={t}>{t}</li>) : <li>—</li>}
+          </ul>
+        </div>
+      </div>
+
+      <details className="details">
+        <summary>Lexicon & matches</summary>
+        <div className="grid2">
+          <div>
+            <div className="mini-head">Matched</div>
+            <ul className="list">
+              {used.length ? (
+                used.map((m, i) => (
+                  <li key={i}>
+                    <code>{m.token}</code> → <span>{m.glyph}</span>
+                  </li>
+                ))
+              ) : (
+                <li>—</li>
+              )}
+            </ul>
+          </div>
+          <div>
+            <div className="mini-head">Add mapping</div>
+            <AddMapping onAdd={addMap} />
+            <div className="mini-head">Current</div>
+            <div className="lex-scroll">
+              {Object.entries(lex).map(([k, v]) => (
+                <span className="pill" key={k}>
+                  {k} {v}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </details>
+    </section>
+  );
+}
+
+function AddMapping({ onAdd }) {
+  const [k, setK] = useState("");
+  const [v, setV] = useState("");
+  return (
+    <div className="row">
+      <input className="input" placeholder="word" value={k} onChange={(e) => setK(e.target.value)} />
+      <input className="input" placeholder="glyph (e.g., 🌙)" value={v} onChange={(e) => setV(e.target.value)} />
+      <button className="btn" onClick={() => (onAdd(k, v), setK(""), setV(""))}>
+        Add
+      </button>
+    </div>
+  );
+}
+```
+
+File: CodeEditor.jsx
+```jsx
+import React, { useMemo, useState } from "react";
+
+/**
+ * CodeEditor
+ * - Lightweight textarea editor with line counting
+ * - Gate: max 10 net lines (L1)
+ * - Starter snippets for ThemeToggle/useTheme
+ */
+const SNIPPETS = {
+  ThemeToggle: `"use client";
+import { useTheme } from "@/hooks/useTheme";
+export function ThemeToggle(){
+  const { theme, toggle } = useTheme();
+  return (<button aria-pressed={theme==="dark"} onClick={toggle} title="Toggle theme">{theme==="dark"?"🌙":"☀️"}</button>);
+}
+`,
+  useTheme: `"use client";
+import { useEffect, useState } from "react";
+const KEY="hive.theme";
+export function useTheme(){
+  const [theme,setTheme]=useState<"light"|"dark">("light");
+  useEffect(()=>{const sys=window.matchMedia("(prefers-color-scheme: dark)").matches;const saved=localStorage.getItem(KEY);setTheme((saved as any)??(sys?"dark":"light"));},[]);
+  useEffect(()=>{document.documentElement.dataset.theme=theme;localStorage.setItem(KEY,theme);},[theme]);
+  return {theme,toggle:()=>setTheme(t=>t==="dark"?"light":"dark")};
+}
+`,
+};
+
+function lines(s) {
+  return (s || "").split("\n").length;
+}
+
+export default function CodeEditor({
+  base = "",
+  initial = SNIPPETS.ThemeToggle,
+  maxNetLines = 10,
+  onApprove,
+  onReject,
+}) {
+  const [orig, setOrig] = useState(base);
+  const [code, setCode] = useState(initial);
+  const net = useMemo(() => Math.max(0, lines(code) - lines(orig || "")), [code, orig]);
+  const withinGate = net <= maxNetLines;
+
+  return (
+    <section className="card">
+      <header className="card-head">
+        <h3>Code Editor</h3>
+        <div className="muted">AST-light patching • Gate ≤ {maxNetLines} net lines</div>
+      </header>
+
+      <div className="row">
+        <button className="btn" onClick={() => setCode(SNIPPETS.ThemeToggle)}>
+          Load ThemeToggle
+        </button>
+        <button className="btn" onClick={() => setCode(SNIPPETS.useTheme)}>
+          Load useTheme
+        </button>
+        <button className="btn" onClick={() => setOrig(code)}>
+          Set as base (accept)
+        </button>
+      </div>
+
+      <label className="label">Patch</label>
+      <textarea className="editor" rows={16} value={code} onChange={(e) => setCode(e.target.value)} />
+
+      <div className="row">
+        <div className={`badge ${withinGate ? "ok" : "warn"}`}>Net lines: {net}</div>
+        {!withinGate ? (
+          <button className="btn warn" onClick={() => onApprove?.()}>
+            Approve patch (human)
+          </button>
+        ) : (
+          <button className="btn" onClick={() => onApprove?.()}>
+            Apply
+          </button>
+        )}
+        <button className="btn ghost" onClick={() => onReject?.()}>Reject</button>
+      </div>
+    </section>
+  );
+}
+```
+
+File: AgentDashboard.jsx
+```jsx
+import React, { useState } from "react";
+
+/**
+ * AgentDashboard
+ * - Shows agent statuses and gates
+ * - Burst/local toggle (policy-aware)
+ * - Violations + approvals
+ */
+const DEFAULT_AGENTS = [
+  { id: "conductor", name: "Conductor", status: "ready" },
+  { id: "spark", name: "Spark (Generator)", status: "idle" },
+  { id: "critic", name: "Critic", status: "idle" },
+  { id: "sentinel", name: "Sentinel", status: "enforcing" },
+  { id: "runner", name: "Sandbox Runner", status: "idle" },
+];
+
+export default function AgentDashboard() {
+  const [agents, setAgents] = useState(DEFAULT_AGENTS);
+  const [router, setRouter] = useState("local"); // "local" | "burst"
+  const [violations, setViolations] = useState([]);
+
+  function mark(id, status) {
+    setAgents((list) => list.map((a) => (a.id === id ? { ...a, status } : a)));
+  }
+
+  function addViolation(rule, severity = "high") {
+    setViolations((v) => [{ rule, severity, at: new Date().toISOString() }, ...v].slice(0, 5));
+  }
+
+  return (
+    <section className="card">
+      <header className="card-head">
+        <h3>Agent Dashboard</h3>
+        <div className="muted">Statuses • Router • Gates</div>
+      </header>
+
+      <div className="agents">
+        {agents.map((a) => (
+          <div className={`agent ${a.status}`} key={a.id}>
+            <div className="agent-name">{a.name}</div>
+            <div className="agent-status">{a.status}</div>
+            <div className="row">
+              <button className="btn xs" onClick={() => mark(a.id, "ready")}>Ready</button>
+              <button className="btn xs" onClick={() => mark(a.id, "running")}>Run</button>
+              <button className="btn xs" onClick={() => mark(a.id, "idle")}>Idle</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="row">
+        <div className="label">Router</div>
+        <div className="seg">
+          <button className={`seg-btn ${router === "local" ? "active" : ""}`} onClick={() => setRouter("local")}>
+            Local 💻
+          </button>
+          <button
+            className={`seg-btn ${router === "burst" ? "active" : ""}`}
+            onClick={() => setRouter("burst")}
+            title="Will be blocked if secrets/schema present"
+          >
+            Burst ⚡
+          </button>
+        </div>
+      </div>
+
+      <div className="row">
+        <button className="btn ghost" onClick={() => addViolation("SEC.SECRET.SCAN", "high")}>
+          Simulate secret violation
+        </button>
+        <button className="btn ghost" onClick={() => addViolation("DIFF.TOO_LARGE", "medium")}>
+          Simulate diff > 10
+        </button>
+      </div>
+
+      <details className="details">
+        <summary>Violations</summary>
+        <ul className="list">
+          {violations.length ? (
+            violations.map((v, i) => (
+              <li key={i}>
+                <b>{v.rule}</b> <em>({v.severity})</em> — <code>{v.at}</code>
+              </li>
+            ))
+          ) : (
+            <li>—</li>
+          )}
+        </ul>
+      </details>
+    </section>
+  );
+}
+```
+
+File: index.html
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>HiveIDE MVP — UI Shell</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="./App.css" rel="stylesheet" />
+  </head>
+  <body>
+    <main id="app">
+      <header class="topbar">
+        <div class="brand">HiveIDE MVP</div>
+        <div class="glyph">[📚🔍⚖️🌐💡]⨹[🤖🧠🔄🔧]⇨[🎯💡🔄🔐]</div>
+      </header>
+      <div class="grid">
+        <!-- Mount React app here -->
+        <div id="react-root"></div>
+      </div>
+      <footer class="footer">
+        Local-first • Zero-cost by default • Zero-trust gates
+      </footer>
+    </main>
+
+    <!-- Quick run:
+         - Put SymbolectEngine.jsx, CodeEditor.jsx, AgentDashboard.jsx alongside this file.
+         - Create App.jsx that imports and renders them.
+         - Use Vite or any bundler to serve (recommended).
+         Or embed via Babel Standalone if you prefer script type="text/babel".
+    -->
+  </body>
+</html>
+```
+
+File: App.css
+```css
+:root {
+  --bg: #0b0b0b;
+  --fg: #e5e7eb;
+  --muted: #9ca3af;
+  --card: #111827;
+  --accent: #818cf8;
+  --ok: #10b981;
+  --warn: #f59e0b;
+  --err: #ef4444;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--fg); font-family: ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; border-bottom: 1px solid #1f2937; background: #0f172a;
+}
+.brand { font-weight: 700; letter-spacing: .2px; }
+.glyph { font-size: 12px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 16px; max-width: 1100px; margin: 0 auto; }
+.card {
+  background: var(--card); border: 1px solid #1f2937; border-radius: 10px; padding: 16px;
+}
+.card-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+.muted { color: var(--muted); font-size: 12px; }
+
+.label { font-size: 12px; color: var(--muted); margin: 8px 0; display: block; }
+.input, .editor, textarea, input {
+  width: 100%; background: #0b1220; color: var(--fg); border: 1px solid #1f2937; border-radius: 8px; padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+.editor { min-height: 240px; }
+
+.row { display: flex; gap: 8px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+.col { flex: 1 1 0; min-width: 240px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.details { background: #0b1220; border: 1px dashed #26334d; padding: 8px; border-radius: 8px; margin-top: 8px; }
+
+.btn {
+  background: #1f2937; color: var(--fg); border: 1px solid #374151; padding: 8px 10px; border-radius: 8px; cursor: pointer;
+}
+.btn:hover { border-color: #4b5563; }
+.btn.ghost { background: transparent; }
+.btn.warn { background: #3b2f12; border-color: var(--warn); color: #fbbf24; }
+.btn.xs { padding: 4px 6px; font-size: 12px; }
+
+.badge {
+  border-radius: 9999px; padding: 4px 8px; font-size: 12px; display: inline-flex; gap: 6px; align-items: center; background: #111827; border: 1px solid #374151;
+}
+.badge.ok { border-color: var(--ok); color: #34d399; }
+.badge.warn { border-color: var(--warn); color: #fbbf24; }
+
+.glyphs { font-size: 20px; padding: 6px 0; }
+.list { margin: 0; padding-left: 16px; }
+.pill { display: inline-block; padding: 4px 8px; border: 1px solid #334155; border-radius: 9999px; margin: 2px; font-size: 12px; }
+
+.agents { display: grid; grid-template-columns: repeat(auto-fill,minmax(220px,1fr)); gap: 8px; }
+.agent { background: #0b1220; border: 1px solid #1f2937; border-radius: 8px; padding: 8px; }
+.agent .agent-name { font-weight: 600; }
+.agent .agent-status { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.agent.ready { border-color: #2563eb55; }
+.agent.running { border-color: #34d39955; }
+.agent.idle { opacity: .9; }
+
+.seg { display: inline-flex; border: 1px solid #334155; border-radius: 8px; overflow: hidden; }
+.seg-btn { background: #0b1220; border: none; color: var(--fg); padding: 6px 10px; cursor: pointer; }
+.seg-btn.active { background: #111827; border-right: 1px solid #1f2937; color: #a5b4fc; }
+
+.footer { padding: 20px; text-align: center; color: var(--muted); border-top: 1px solid #1f2937; margin-top: 16px; }
+
+.lex-scroll { max-height: 120px; overflow: auto; border: 1px dashed #26334d; padding: 6px; border-radius: 6px; }
+.mini-head { font-size: 12px; color: var(--muted); margin: 6px 0; }
+```
+
+File: todo.md
+```md
+# HiveIDE MVP — TODO
+
+- [ ] Wire React App entry (App.jsx) to render:
+      <SymbolectEngine />, <CodeEditor />, <AgentDashboard />
+- [ ] Add simple bus stubs (optional): POST decisions to daemon
+- [ ] Add “Approve patch” and “Burst” modals in web UI (Next.js variant)
+- [ ] Hook CodeEditor "Apply" to local file patch write (if using fs in Electron / Node-backed)
+- [ ] Storybook (optional): ThemeToggle + states
+- [ ] CI: pnpm format && typecheck && test for apps/web
+- [ ] Sentinel config review: config/sentinel.rules.yaml
+- [ ] Neo4j/Qdrant write-back job post-merge
+- [ ] ADRs linked in docs/adr/README.md
+```
+
+File: hiveide_mvp_execution_plan.pdf
+```md
+% Export this markdown as PDF (print to PDF) and save as hiveide_mvp_execution_plan.pdf
+
+# HiveIDE MVP — Execution Plan (Printable)
+
+- Goal: NL → PR < 5 minutes, local-first, zero-trust
+- Scope: Dark Mode Toggle (L1)
+
+Phases
+1) Prep (15 min)
+   - docker compose up (web, daemon, agents, nats, neo4j, qdrant)
+   - Apply Neo4j constraints; ensure Qdrant collection exists
+
+2) Documentation (20 min)
+   - PRD.dark-mode.md complete (≥0.7)
+   - UX.dark-mode.md with screen states
+
+3) Build (25 min)
+   - Implement ThemeToggle + useTheme + globals tokens
+   - Unit tests (RTL/Jest)
+   - Wire SymbolectEngine + AgentDashboard demo
+
+4) Run NL→PR (20 min)
+   - Start task; approve patch if >10 lines
+   - Sandbox tests (net=none)
+   - Open PR (Octokit optional)
+
+5) Wrap (10 min)
+   - Write-back to KG/Vec
+   - Record KPIs: cycle time, diff lines, pass rate
+
+Risks & Gates
+- Diff > 10 → human approve
+- Secrets/deps/network/schema → block
+- Never burst for secrets/schema
+
+KPIs
+- Cycle time ≤ 5m • Tests pass 100% • Violations=0
+```
+
+File: hiveide_mvp_24hr_plan.md
+```md
+# HiveIDE MVP — 24 Hour Plan
+
+Hour 0–2: Infra + Skeleton
+- Compose up (nats, neo4j, qdrant, daemon, agents, web)
+- Apply schemas; verify health endpoints
+- Create App.jsx to mount SymbolectEngine, CodeEditor, AgentDashboard
+
+Hour 2–6: Dark Mode Feature
+- Build ThemeToggle/useTheme; add globals.css tokens
+- Add RTL/Jest test; ensure L1 ≤ 10 lines per patch
+- Manual local run; confirm no hydration warnings
+
+Hour 6–10: Gates + Telemetry
+- Sentinel rules: diff≤10, secrets/deps/net/schema gates
+- Add simple log spans; collect KPIs per run
+
+Hour 10–14: PR Flow (optional)
+- Add Octokit-based PR open + comment
+- Ensure CI quick path (format/typecheck/test)
+
+Hour 14–18: KG/Vec Write-back
+- Add post-merge scripts for Neo4j/Qdrant
+- Stamp PR with glyph header + semantic checksum (meta only)
+
+Hour 18–22: Docs + ADRs
+- Finalize PRD, UX, ARCH
+- Commit ADR-0001..0004 + index
+
+Hour 22–24: Dry Run + Polish
+- Full NL→PR run under 5 minutes
+- Fix rough edges; prepare demo and notes
+```
+
+File: ##📋HiveIDEProductRequirements.txt
+```txt
+## HiveIDE — Product Requirements (MVP)
+
+Consensus Glyph: [📚🔍⚖️🌐💡]⨹[🤖🧠🔄🔧]⇨[🎯💡🔄🔐]
+
+1) Elevator Pitch
+Ship small, safe code changes from natural language to a tested PR in minutes, local-first and zero-cost by default.
+
+2) Problem
+Developers waste time on glue steps (context, scaffolding, tests). AI helps but lacks governance and context memory.
+
+3) Target Users
+- Solo devs and small teams needing fast, safe automation for simple changes (L1)
+- Secondary: enterprises evaluating controlled autonomy
+
+4) MVP Scope
+- NL → PR for Dark Mode Toggle (L1)
+- Symbolect compression + KG anchors
+- Zero-trust gates (diff≤10; secrets/deps/net/schema)
+- Local-first; burst opt-in and policy-guarded
+
+5) Functional Requirements
+- FR1: Parse NL → Symbolect glyphs + tags
+- FR2: Generate small code patches + unit tests
+- FR3: Enforce autonomy gates and sandbox tests
+- FR4: Compose PR with glyph header + summary
+
+6) Non-Functional Requirements
+- Cycle time p50 ≤ 5m
+- Tests pass 100% for changed scope
+- No secrets/deps/schema/network changes in MVP path
+- Local execution; $0 budget
+
+7) KPIs
+- NL→PR cycle time (p50/p95)
+- Test pass rate
+- Violation count by rule
+- Reviewer happiness (emoji tap)
+
+8) Out of Scope (MVP)
+- Multi-repo refactors; heavy deps; schema migrations
+- Advanced analytics; multi-region execution
+
+9) Acceptance Criteria
+- Dark Mode Toggle (L1) from NL → PR under 5 min locally
+- Diff ≤ 10 lines or human-approved
+- Unit tests added and pass in sandbox
+```
+
+File: HideIDEUIUX.txt
+```txt
+HiveIDE — UI/UX Specification (MVP)
+
+Summary
+- Three-pane experience: Symbolect Engine, Code Editor, Agent Dashboard
+- Human-in-the-loop gates surfaced with clear prompts (Approve patch / Burst)
+
+Personas
+- USER:SOLO (local-first) • USER:STARTUP (small team)
+
+Information Architecture
+- Header: brand + consensus glyph
+- Main grid:
+  - Left: SymbolectEngine (NL → glyphs + KG tags)
+  - Center: CodeEditor (patch, net-line gate)
+  - Right: AgentDashboard (statuses, burst/local, violations)
+
+Visual Language
+- Dark theme; tokens (bg/fg/accent)
+- Focus ring visible; AA contrast
+
+Components
+- ThemeToggle (☀️/🌙) with aria-pressed + title
+- Buttons (primary/ghost/warn)
+- Badges for gate state (OK/Warn)
+- Segmented control for router (Local/Burst)
+
+Screen States
+- SymbolectEngine: input, glyphs, tags; no error
+- CodeEditor: net lines OK/Warn; Approve patch for >10 lines
+- AgentDashboard: ready/running/idle; violations list
+
+Interactions & Motion
+- Subtle button hover; icon fade 120–150ms
+- Respects prefers-reduced-motion
+
+Accessibility
+- Keyboard: Tab focus; Enter/Space activate
+- aria-pressed on toggles; titles for icons
+- Contrast ≥ AA
+
+Telemetry
+- Log user actions: approve_patch, burst_choice (local-only at MVP)
+- KPIs on footer card or PR comment
+```
+
+Quick run note (React app)
+- Create App.jsx (not requested, but needed to render these):
+```jsx
+// App.jsx
+import React from "react";
+import SymbolectEngine from "./SymbolectEngine.jsx";
+import CodeEditor from "./CodeEditor.jsx";
+import AgentDashboard from "./AgentDashboard.jsx";
+
+export default function App() {
+  return (
+    <div className="grid">
+      <SymbolectEngine />
+      <CodeEditor onApprove={() => alert("Apply/Approve")} onReject={() => alert("Rejected")} />
+      <AgentDashboard />
+    </div>
+  );
+}
+```
+- Then mount in main.jsx:
+```jsx
+// main.jsx
+import React from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.jsx";
+import "./App.css";
+
+createRoot(document.getElementById("react-root")).render(<App />);
+```
+- Use Vite for a 60-second dev server:
+  - npm create vite@latest hiveide-mvp -- --template react
+  - Copy the files in; npm i; npm run dev
+Perfect—continuing with the Vite scaffold so you can run the Symbolect UI shell in 60–90 seconds. Below are exact commands plus the minimal files (package.json, vite.config, index.html, main/App wrappers) wired to the three components you already have.
+
+Quick start (one command set)
+- Using npm
+  - npx create-vite@latest hiveide-mvp-ui -- --template react
+  - cd hiveide-mvp-ui
+  - npm i
+- Using pnpm (optional)
+  - pnpm dlx create-vite@latest hiveide-mvp-ui -- --template react
+  - cd hiveide-mvp-ui
+  - pnpm i
+
+Drop these files into the new app
+1) package.json (replace)
+json
+Copy
+Edit
+{
+  "name": "hiveide-mvp-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.0"
+  }
+}
+
+2) vite.config.js
+js
+Copy
+Edit
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  server: { port: 5173, open: true },
+  preview: { port: 4173 }
+});
+
+3) index.html (at repo root; replace Vite’s default)
+html
+Copy
+Edit
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HiveIDE MVP — UI Shell</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+4) src/main.jsx
+jsx
+Copy
+Edit
+import React from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.jsx";
+import "./App.css";
+
+createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+5) src/App.jsx
+jsx
+Copy
+Edit
+import React from "react";
+import SymbolectEngine from "./components/SymbolectEngine.jsx";
+import CodeEditor from "./components/CodeEditor.jsx";
+import AgentDashboard from "./components/AgentDashboard.jsx";
+import "./App.css";
+
+export default function App() {
+  return (
+    <>
+      <header className="topbar">
+        <div className="brand">HiveIDE MVP</div>
+        <div className="glyph">[📚🔍⚖️🌐💡]⨹[🤖🧠🔄🔧]⇨[🎯💡🔄🔐]</div>
+      </header>
+      <div className="grid">
+        <SymbolectEngine />
+        <CodeEditor onApprove={() => alert("Apply/Approve")} onReject={() => alert("Rejected")} />
+        <AgentDashboard />
+      </div>
+      <footer className="footer">Local-first • Zero-cost by default • Zero-trust gates</footer>
+    </>
+  );
+}
+
+6) src/App.css (paste the App.css you already have)
+css
+Copy
+Edit
+:root {
+  --bg: #0b0b0b;
+  --fg: #e5e7eb;
+  --muted: #9ca3af;
+  --card: #111827;
+  --accent: #818cf8;
+  --ok: #10b981;
+  --warn: #f59e0b;
+  --err: #ef4444;
+}
+/* … keep the rest from your App.css … */
+
+7) src/components/SymbolectEngine.jsx
+- Use the exact file you generated earlier.
+
+8) src/components/CodeEditor.jsx
+- Use the exact file you generated earlier.
+
+9) src/components/AgentDashboard.jsx
+- Use the exact file you generated earlier.
+
+Optional: Dockerize the Vite UI (static build)
+Dockerfile
+dockerfile
+Copy
+Edit
+# Build
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+RUN npm i
+COPY . .
+RUN npm run build
+
+# Serve (nginx)
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx","-g","daemon off;"]
+
+Run it
+- Local dev
+  - npm run dev
+  - Open http://localhost:5173
+- Production preview
+  - npm run build && npm run preview
+  - Open http://localhost:4173
+- Docker
+  - docker build -t hiveide-mvp-ui .
+  - docker run -p 8080:80 hiveide-mvp-ui
+  - Open http://localhost:8080
+
+Quick verify checklist
+- SymbolectEngine:
+  - Type “Add a dark mode toggle and tests” → glyphs show (🌙 🧪) and KG anchors list
+- CodeEditor:
+  - Load ThemeToggle/useTheme snippets → Net lines badge updates; Approve button appears if over 10
+- AgentDashboard:
+  - Simulate violations → list updates; Local/Burst toggle switches state
+
+Below is a minimal GitHub Action that builds your Vite UI and publishes the production build (dist/) as an artifact.
+
+Save this as .github/workflows/build-ui.yml in your repo.
+
+yaml
+Copy
+Edit
+name: Build Vite UI and Upload Artifact
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-ui-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Set to '.' if the UI is at the repo root.
+  # If your Vite app is in a subfolder (e.g., apps/ui), change this to that path.
+  UI_DIR: .
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.UI_DIR }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ env.UI_DIR }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload production artifact (dist/)
+        uses: actions/upload-artifact@v4
+        with:
+          name: vite-dist-${{ github.sha }}
+          path: ${{ env.UI_DIR }}/dist
+          if-no-files-found: error
+          retention-days: 7
+
+Notes
+- UI_DIR: If your Vite project lives in a subdirectory (for example, apps/web or hiveide-mvp-ui), set UI_DIR accordingly at the top of the workflow.
+- Package manager: This workflow uses npm ci. If you use pnpm or yarn, replace the install step with your tool’s equivalent and adjust the cache settings:
+  - pnpm:
+    - Add a setup step: uses pnpm/action-setup@v2 with version: 9
+    - Set cache: with cache: pnpm (setup-node)
+    - Install: pnpm i --frozen-lockfile
+  - yarn:
+    - Set cache: with cache: yarn (setup-node)
+    - Install: yarn install --frozen-lockfile
+
+- Artifact: After the workflow runs, download the vite-dist-<SHA> artifact from the workflow run Summary page (Actions tab).

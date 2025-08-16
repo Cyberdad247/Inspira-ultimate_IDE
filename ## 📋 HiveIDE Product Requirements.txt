@@ -1,0 +1,773 @@
+## 📋 HiveIDE Product Requirements Document (PRD) v2.0
+
+**Document ID**: PRD-HIVE-2025-001  
+**Created**: 2025-08-13  
+**Last Updated**: 2025-08-13  
+**Status**: Active  
+**Owner**: Product Team  
+**Stakeholders**: Engineering, Design, Security, DevOps  
+
+---
+
+## 🎯 Executive Summary
+
+### Elevator Pitch
+HiveIDE is an AI-powered development environment that transforms natural language requests into production-ready code in under 5 minutes. Using swarm intelligence and symbolic reasoning, it enables developers to build features 10x faster while maintaining enterprise-grade security and quality standards.
+
+### Problem Statement
+**Primary Problem**: Developers spend 70% of their time on repetitive tasks (boilerplate code, testing, documentation) instead of solving core business problems.
+
+**Secondary Problems**:
+- Context switching between tools reduces productivity by 40%
+- Code review cycles take 2-5 days on average
+- Junior developers need 6+ months to become productive
+- Technical debt accumulates faster than it can be addressed
+
+### Success Metrics
+- **Primary**: NL → Production-ready PR in < 5 minutes
+- **Secondary**: 10x improvement in feature development velocity
+- **Quality**: 95% automated test coverage, 90% first-time PR approval rate
+- **Adoption**: 90% daily active usage within development teams
+
+---
+
+## 👥 Target Audience
+
+### Primary Personas
+
+#### 1. Senior Full-Stack Developer (Alex)
+```yaml
+demographics:
+  experience: "5-10 years"
+  team_size: "3-8 developers"
+  company_size: "50-500 employees"
+
+pain_points:
+  - "Spending too much time on boilerplate code"
+  - "Context switching between multiple tools"
+  - "Reviewing junior developer code takes hours"
+
+goals:
+  - "Focus on architecture and complex problem-solving"
+  - "Mentor team members more effectively"
+  - "Ship features faster without sacrificing quality"
+
+usage_patterns:
+  - "Works on 3-5 features simultaneously"
+  - "Reviews 10-15 PRs per week"
+  - "Prefers keyboard shortcuts and CLI tools"
+```
+
+#### 2. Startup CTO (Morgan)
+```yaml
+demographics:
+  experience: "8-15 years"
+  team_size: "2-12 developers"
+  company_size: "5-50 employees"
+
+pain_points:
+  - "Limited engineering resources"
+  - "Need to move fast without breaking things"
+  - "Hiring senior developers is expensive and slow"
+
+goals:
+  - "Maximize team output with minimal resources"
+  - "Maintain code quality during rapid growth"
+  - "Enable junior developers to contribute meaningfully"
+
+usage_patterns:
+  - "Hands-on coding 50% of time"
+  - "Strategic planning and architecture 30%"
+  - "Team management and hiring 20%"
+```
+
+#### 3. Enterprise Engineering Manager (Jordan)
+```yaml
+demographics:
+  experience: "10+ years"
+  team_size: "15-50 developers"
+  company_size: "1000+ employees"
+
+pain_points:
+  - "Coordinating across multiple teams and systems"
+  - "Ensuring security and compliance standards"
+  - "Managing technical debt at scale"
+
+goals:
+  - "Standardize development practices across teams"
+  - "Reduce time-to-market for new features"
+  - "Improve developer satisfaction and retention"
+
+usage_patterns:
+  - "Strategic oversight and planning"
+  - "Code reviews for critical features"
+  - "Tool evaluation and adoption decisions"
+```
+
+### Secondary Personas
+- **Junior Developers**: Accelerated learning and productivity
+- **DevOps Engineers**: Automated deployment and monitoring
+- **Product Managers**: Faster feature iteration and validation
+
+---
+
+## 🚀 Unique Selling Propositions
+
+### 1. Swarm Intelligence Architecture
+**What**: Multiple AI agents collaborate autonomously to solve complex development tasks
+**Why**: Single AI assistants hit capability limits; swarms achieve emergent problem-solving
+**Benefit**: Handles enterprise-complexity features that other tools cannot
+
+### 2. Symbolic Reasoning (Symbolect)
+**What**: Compresses complex requirements into symbolic representations (90% token reduction)
+**Why**: Traditional NLP approaches are inefficient and lose context
+**Benefit**: Faster processing, better accuracy, lower costs
+
+### 3. Local-First Execution
+**What**: Core functionality runs entirely on developer's machine
+**Why**: Security, privacy, and cost concerns with cloud-only solutions
+**Benefit**: Zero vendor lock-in, enterprise security compliance, $0 operational cost
+
+### 4. Progressive Autonomy
+**What**: Gradually increases automation based on trust and success patterns
+**Why**: Developers need control and transparency in AI-assisted development
+**Benefit**: Builds confidence while maintaining safety and quality
+
+### 5. Self-Healing Systems
+**What**: Automatically detects and fixes issues before they reach production
+**Why**: Manual debugging and fixing is time-consuming and error-prone
+**Benefit**: Reduces production incidents by 80%, improves system reliability
+
+---
+
+## 🏗️ Platform Strategy
+
+### Primary Platform: Desktop Application
+```yaml
+target_os: ["Windows 10+", "macOS 12+", "Linux (Ubuntu 20.04+)"]
+architecture: "Electron + Native Backend"
+minimum_requirements:
+  cpu: "4 cores"
+  memory: "8GB"
+  storage: "50GB SSD"
+  gpu: "Optional (4GB VRAM for local models)"
+
+deployment_method: "Docker Compose (single-host)"
+installation_time: "< 5 minutes"
+```
+
+### Secondary Platforms
+```yaml
+web_interface:
+  purpose: "Remote access, collaboration, demos"
+  limitations: "Reduced functionality, cloud dependency"
+  
+vscode_extension:
+  purpose: "Existing workflow integration"
+  scope: "Core features only"
+  
+cli_tools:
+  purpose: "CI/CD integration, power users"
+  features: ["batch processing", "automation", "scripting"]
+```
+
+---
+
+## ⚙️ Functional Requirements
+
+### Core Features (MVP)
+
+#### FR-001: Natural Language to Code Generation
+```yaml
+description: "Convert natural language requests into production-ready code"
+acceptance_criteria:
+  - "Process requests in < 5 minutes end-to-end"
+  - "Generate code in Python, TypeScript, Go"
+  - "Include comprehensive tests and documentation"
+  - "Maintain 95% syntactic correctness"
+  
+user_story: |
+  As a developer, I want to describe a feature in natural language
+  so that I can get a complete implementation without writing boilerplate code.
+
+priority: "P0 (Critical)"
+complexity: "High"
+dependencies: ["Symbolect Parser", "Code Generator Agent", "Test Generator"]
+```
+
+#### FR-002: Automated Testing Pipeline
+```yaml
+description: "Automatically run format, typecheck, and tests in isolated sandbox"
+acceptance_criteria:
+  - "Execute tests in < 60 seconds"
+  - "Support Jest, pytest, Go test frameworks"
+  - "Generate coverage reports"
+  - "Fail fast on critical errors"
+  
+user_story: |
+  As a developer, I want automated testing after code generation
+  so that I can trust the quality of generated code.
+
+priority: "P0 (Critical)"
+complexity: "Medium"
+dependencies: ["Sandbox Environment", "Test Runner", "Docker Integration"]
+```
+
+#### FR-003: Intelligent Code Review
+```yaml
+description: "AI-powered code review with security, performance, and style analysis"
+acceptance_criteria:
+  - "Detect security vulnerabilities with 95% accuracy"
+  - "Suggest performance optimizations"
+  - "Enforce consistent code style"
+  - "Generate human-readable review comments"
+  
+user_story: |
+  As a team lead, I want automated code review
+  so that I can focus on architectural decisions rather than style issues.
+
+priority: "P0 (Critical)"
+complexity: "High"
+dependencies: ["Security Scanner", "Performance Analyzer", "Style Checker"]
+```
+
+### Advanced Features (Post-MVP)
+
+#### FR-004: Swarm Development
+```yaml
+description: "Multiple AI agents collaborate on complex features"
+acceptance_criteria:
+  - "Coordinate 5-10 agents simultaneously"
+  - "Handle features spanning multiple files/services"
+  - "Resolve conflicts automatically"
+  - "Maintain consistency across agents"
+
+priority: "P1 (High)"
+complexity: "Very High"
+dependencies: ["Agent Orchestration", "Conflict Resolution", "State Management"]
+```
+
+#### FR-005: Predictive Development
+```yaml
+description: "Predict and prevent issues before they occur"
+acceptance_criteria:
+  - "Detect potential bugs with 80% accuracy"
+  - "Suggest architectural improvements"
+  - "Predict performance bottlenecks"
+  - "Recommend refactoring opportunities"
+
+priority: "P1 (High)"
+complexity: "High"
+dependencies: ["Pattern Recognition", "Telemetry Analysis", "ML Models"]
+```
+
+#### FR-006: Cross-Project Learning
+```yaml
+description: "Share patterns and solutions across projects and teams"
+acceptance_criteria:
+  - "Federate with other HiveIDE instances"
+  - "Share successful patterns automatically"
+  - "Learn from community solutions"
+  - "Maintain privacy and security"
+
+priority: "P2 (Medium)"
+complexity: "Very High"
+dependencies: ["Federation Protocol", "Trust Network", "Pattern Exchange"]
+```
+
+---
+
+## 🔧 Non-Functional Requirements
+
+### Performance Requirements
+```yaml
+NFR-001_Response_Time:
+  requirement: "NL → PR generation in < 5 minutes (95th percentile)"
+  measurement: "End-to-end latency monitoring"
+  target: "3 minutes average, 5 minutes maximum"
+
+NFR-002_Throughput:
+  requirement: "Support 10 concurrent feature generations per instance"
+  measurement: "Concurrent request handling"
+  target: "Linear scaling with available resources"
+
+NFR-003_Resource_Usage:
+  requirement: "Operate within 8GB RAM, 4 CPU cores"
+  measurement: "Resource monitoring during peak usage"
+  target: "< 80% utilization under normal load"
+```
+
+### Security Requirements
+```yaml
+NFR-004_Data_Privacy:
+  requirement: "No code leaves local environment without explicit consent"
+  measurement: "Network traffic analysis"
+  target: "Zero unauthorized data transmission"
+
+NFR-005_Access_Control:
+  requirement: "Role-based access control with audit logging"
+  measurement: "Security audit compliance"
+  target: "SOC 2 Type II compliance"
+
+NFR-006_Vulnerability_Management:
+  requirement: "Detect and prevent security vulnerabilities in generated code"
+  measurement: "Security scan results"
+  target: "Zero critical vulnerabilities in production"
+```
+
+### Reliability Requirements
+```yaml
+NFR-007_Availability:
+  requirement: "99.9% uptime for local services"
+  measurement: "Service health monitoring"
+  target: "< 8.76 hours downtime per year"
+
+NFR-008_Error_Recovery:
+  requirement: "Automatic recovery from transient failures"
+  measurement: "Error rate and recovery time"
+  target: "< 1% permanent failures, < 30s recovery time"
+
+NFR-009_Data_Integrity:
+  requirement: "No data loss during operations"
+  measurement: "Data consistency checks"
+  target: "100% data integrity maintained"
+```
+
+### Usability Requirements
+```yaml
+NFR-010_Learning_Curve:
+  requirement: "New users productive within 30 minutes"
+  measurement: "User onboarding metrics"
+  target: "90% of users complete first feature generation"
+
+NFR-011_Accessibility:
+  requirement: "WCAG 2.1 AA compliance"
+  measurement: "Accessibility audit"
+  target: "Full compliance with accessibility standards"
+
+NFR-012_Documentation:
+  requirement: "Comprehensive documentation and examples"
+  measurement: "Documentation coverage and user feedback"
+  target: "95% of features documented with examples"
+```
+
+---
+
+## 📖 User Stories & Acceptance Criteria
+
+### Epic 1: Core Development Workflow
+
+#### Story 1.1: Feature Request Processing
+```gherkin
+Feature: Natural Language Feature Generation
+  As a developer
+  I want to describe features in natural language
+  So that I can get complete implementations quickly
+
+Scenario: Simple feature generation
+  Given I have HiveIDE running
+  When I request "Add a dark mode toggle to the header"
+  Then I should receive a complete implementation in < 5 minutes
+  And the implementation should include:
+    - React component with TypeScript
+    - CSS styles with theme variables
+    - Unit tests with 90%+ coverage
+    - Documentation with usage examples
+  And all tests should pass
+  And code should follow project style guidelines
+
+Scenario: Complex feature generation
+  Given I have HiveIDE running
+  When I request "Add user authentication with JWT and password reset"
+  Then I should receive a complete implementation in < 5 minutes
+  And the implementation should include:
+    - Backend API endpoints
+    - Frontend authentication flow
+    - Database schema updates
+    - Security best practices
+    - Comprehensive test suite
+  And all security scans should pass
+```
+
+#### Story 1.2: Automated Testing
+```gherkin
+Feature: Automated Test Execution
+  As a developer
+  I want tests to run automatically after code generation
+  So that I can trust the quality of generated code
+
+Scenario: Successful test execution
+  Given code has been generated
+  When the automated test pipeline runs
+  Then format checking should complete in < 10 seconds
+  And type checking should complete in < 20 seconds
+  And unit tests should complete in < 60 seconds
+  And all checks should pass
+  And I should receive a detailed report
+
+Scenario: Test failure handling
+  Given code has been generated with issues
+  When the automated test pipeline runs
+  And tests fail
+  Then the system should automatically attempt fixes
+  And if fixes succeed, tests should re-run
+  And if fixes fail, I should receive detailed error information
+  And the system should offer rollback options
+```
+
+### Epic 2: Collaboration & Review
+
+#### Story 2.1: AI Code Review
+```gherkin
+Feature: Intelligent Code Review
+  As a team lead
+  I want AI-powered code review
+  So that I can focus on architectural decisions
+
+Scenario: Comprehensive code review
+  Given a pull request has been created
+  When the AI review system analyzes the code
+  Then it should check for:
+    - Security vulnerabilities
+    - Performance issues
+    - Code style violations
+    - Test coverage gaps
+    - Documentation completeness
+  And provide actionable feedback
+  And assign severity levels to issues
+  And suggest specific fixes
+
+Scenario: Review approval workflow
+  Given an AI code review has been completed
+  When all critical issues are resolved
+  And code quality meets standards
+  Then the system should recommend approval
+  And notify relevant team members
+  And update project metrics
+```
+
+### Epic 3: Advanced Intelligence
+
+#### Story 3.1: Predictive Development
+```gherkin
+Feature: Predictive Issue Detection
+  As a senior developer
+  I want the system to predict potential issues
+  So that I can prevent problems before they occur
+
+Scenario: Performance bottleneck prediction
+  Given the system is analyzing code patterns
+  When it detects potential performance issues
+  Then it should alert me with specific concerns
+  And suggest optimization strategies
+  And provide performance impact estimates
+  And offer to implement optimizations automatically
+
+Scenario: Architecture evolution suggestions
+  Given the codebase has grown significantly
+  When the system detects architectural debt
+  Then it should suggest refactoring opportunities
+  And provide migration plans
+  And estimate effort and risk levels
+  And offer to implement changes incrementally
+```
+
+---
+
+## ❓ Critical Questions for Stakeholder Clarification
+
+### Technical Architecture
+1. **Model Hosting Strategy**: Should we prioritize local models (privacy/cost) or cloud models (capability)? 
+   - *Current Decision*: Hybrid approach with local-first, cloud-burst capability
+
+2. **Data Persistence**: How long should we retain generated code patterns and user interactions?
+   - *Needs Clarification*: Legal/compliance requirements for data retention
+
+3. **Integration Strategy**: Which existing tools should we integrate with first (GitHub, GitLab, Jira)?
+   - *Needs Clarification*: Customer priority ranking
+
+### Business Model
+4. **Pricing Strategy**: Freemium vs. enterprise-only vs. usage-based pricing?
+   - *Needs Clarification*: Market research and competitive analysis
+
+5. **Open Source Components**: Which parts of the system should be open-sourced?
+   - *Needs Clarification*: Business strategy and competitive positioning
+
+## ❓ Critical Questions for Stakeholder Clarification (Continued)
+
+### User Experience
+7. **Customization Level**: How much should users be able to customize AI behavior and preferences?
+   - *Needs Clarification*: Balance between simplicity and power-user features
+
+8. **Error Handling**: When AI generates incorrect code, should the system auto-retry, ask for clarification, or escalate to human?
+   - *Current Decision*: Auto-retry once, then request human guidance
+
+### Security & Compliance
+9. **Enterprise Security**: What specific compliance certifications are required (SOC 2, ISO 27001, FedRAMP)?
+   - *Needs Clarification*: Target enterprise customer requirements
+
+10. **Code Ownership**: Who owns the intellectual property of AI-generated code?
+    - *Needs Clarification*: Legal framework and customer agreements
+
+11. **Audit Requirements**: What level of audit logging is needed for enterprise customers?
+    - *Needs Clarification*: Regulatory and compliance requirements
+
+### Scalability & Operations
+12. **Multi-tenancy**: Should the system support multiple isolated workspaces per organization?
+    - *Needs Clarification*: Enterprise customer requirements
+
+13. **Disaster Recovery**: What are the RTO/RPO requirements for enterprise deployments?
+    - *Needs Clarification*: Customer SLA expectations
+
+---
+
+## 🎯 Success Criteria & KPIs
+
+### Primary Success Metrics
+```yaml
+user_adoption:
+  target: "90% daily active usage within teams"
+  measurement: "Daily active users / Total licensed users"
+  timeline: "3 months post-deployment"
+
+development_velocity:
+  target: "10x improvement in feature development speed"
+  measurement: "Time from requirement to production deployment"
+  baseline: "Current team average"
+
+quality_maintenance:
+  target: "95% first-time PR approval rate"
+  measurement: "PRs approved without changes / Total PRs"
+  baseline: "Current team average"
+
+cost_efficiency:
+  target: "80% reduction in development costs per feature"
+  measurement: "Total cost (time + resources) per delivered feature"
+  baseline: "Pre-HiveIDE implementation costs"
+```
+
+### Secondary Success Metrics
+```yaml
+developer_satisfaction:
+  target: "4.5/5 average satisfaction score"
+  measurement: "Monthly developer experience survey"
+  
+code_quality:
+  target: "50% reduction in post-deployment bugs"
+  measurement: "Production incidents per feature"
+  
+security_posture:
+  target: "Zero critical vulnerabilities in generated code"
+  measurement: "Security scan results"
+  
+learning_acceleration:
+  target: "Junior developers productive 3x faster"
+  measurement: "Time to first meaningful contribution"
+```
+
+---
+
+## 🗓️ Release Strategy
+
+### Phase 1: Alpha Release (Internal Testing)
+```yaml
+timeline: "4 weeks"
+scope: "Core NL → Code generation"
+audience: "Internal development team (5-10 users)"
+success_criteria:
+  - "Basic feature generation works 80% of the time"
+  - "No critical security vulnerabilities"
+  - "Installation process < 10 minutes"
+```
+
+### Phase 2: Beta Release (Friendly Customers)
+```yaml
+timeline: "8 weeks"
+scope: "Full development workflow + testing"
+audience: "3-5 friendly customer teams (50-100 users)"
+success_criteria:
+  - "95% feature generation success rate"
+  - "< 5 minute NL → PR cycle time"
+  - "Positive customer feedback (4+/5)"
+```
+
+### Phase 3: Limited GA (Early Adopters)
+```yaml
+timeline: "12 weeks"
+scope: "Production-ready with basic enterprise features"
+audience: "Early adopter customers (500-1000 users)"
+success_criteria:
+  - "99.9% system availability"
+  - "SOC 2 Type I compliance"
+  - "Customer success stories and case studies"
+```
+
+### Phase 4: General Availability
+```yaml
+timeline: "16 weeks"
+scope: "Full feature set with enterprise support"
+audience: "General market"
+success_criteria:
+  - "Scalable to 10,000+ users"
+  - "Complete documentation and training materials"
+  - "24/7 enterprise support capability"
+```
+
+---
+
+## 🔄 Feedback Integration Process
+
+### Continuous Feedback Loops
+```yaml
+user_feedback:
+  collection_methods:
+    - "In-app feedback widget"
+    - "Weekly user interviews"
+    - "Usage analytics and telemetry"
+    - "Customer success team reports"
+  
+  processing_frequency: "Weekly review, monthly prioritization"
+  
+  integration_timeline:
+    - "Critical issues: 24-48 hours"
+    - "High priority: 1-2 weeks"
+    - "Medium priority: 1 month"
+    - "Low priority: Next major release"
+
+stakeholder_reviews:
+  frequency: "Bi-weekly"
+  participants: ["Product", "Engineering", "Design", "Customer Success"]
+  deliverables: ["Updated requirements", "Priority adjustments", "Resource allocation"]
+```
+
+### Metrics-Driven Iteration
+```yaml
+data_collection:
+  - "Feature usage analytics"
+  - "Performance metrics"
+  - "Error rates and patterns"
+  - "User satisfaction scores"
+  - "Customer support tickets"
+
+decision_framework:
+  - "Data-driven prioritization"
+  - "Customer impact assessment"
+  - "Technical feasibility analysis"
+  - "Resource requirement evaluation"
+  - "ROI calculation"
+```
+
+---
+
+## 📋 Appendices
+
+### Appendix A: Technical Architecture Diagram
+```mermaid
+graph TB
+    subgraph "User Interface Layer"
+        UI[Web Interface]
+        CLI[CLI Tools]
+        VSC[VS Code Extension]
+    end
+    
+    subgraph "API Gateway"
+        GW[API Gateway]
+        AUTH[Authentication]
+        RATE[Rate Limiting]
+    end
+    
+    subgraph "Core Services"
+        COND[Conductor]
+        CODA[Coda - Symbolect]
+        SPARK[Spark - Code Gen]
+        SENT[Sentinel - Security]
+        ORC[Oracle - Knowledge]
+    end
+    
+    subgraph "Data Layer"
+        NEO[Neo4j - Knowledge Graph]
+        QDR[Qdrant - Vector DB]
+        RED[Redis - Cache]
+    end
+    
+    subgraph "Infrastructure"
+        DOCK[Docker Containers]
+        NATS[NATS Message Bus]
+        MON[Monitoring]
+    end
+    
+    UI --> GW
+    CLI --> GW
+    VSC --> GW
+    
+    GW --> COND
+    COND --> CODA
+    COND --> SPARK
+    COND --> SENT
+    COND --> ORC
+    
+    CODA --> NEO
+    ORC --> QDR
+    SPARK --> RED
+    
+    COND --> NATS
+    NATS --> MON
+```
+
+### Appendix B: Competitive Analysis Summary
+```yaml
+github_copilot:
+  strengths: ["Wide adoption", "IDE integration", "Microsoft backing"]
+  weaknesses: ["Limited to code completion", "No workflow automation", "Cloud dependency"]
+  differentiation: "HiveIDE provides full workflow automation vs. code suggestions"
+
+cursor_ide:
+  strengths: ["Full IDE experience", "Context awareness", "Good UX"]
+  weaknesses: ["Single AI model", "Limited customization", "Subscription only"]
+  differentiation: "HiveIDE uses swarm intelligence vs. single AI assistant"
+
+replit_agent:
+  strengths: ["Full-stack development", "Integrated environment", "Good for beginners"]
+  weaknesses: ["Cloud-only", "Limited enterprise features", "Performance constraints"]
+  differentiation: "HiveIDE offers local-first deployment with enterprise security"
+
+devin:
+  strengths: ["Autonomous development", "Complex task handling", "Impressive demos"]
+  weaknesses: ["Black box operation", "Limited availability", "High cost"]
+  differentiation: "HiveIDE provides transparent, explainable AI with local deployment"
+```
+
+### Appendix C: Risk Assessment Matrix
+```yaml
+high_impact_high_probability:
+  - "AI model accuracy below expectations"
+  - "Performance targets not met"
+  - "Security vulnerabilities in generated code"
+
+high_impact_low_probability:
+  - "Major competitor launches similar product"
+  - "Regulatory changes affecting AI-generated code"
+  - "Key technical talent departure"
+
+low_impact_high_probability:
+  - "Minor bugs in generated code"
+  - "User interface usability issues"
+  - "Documentation gaps"
+
+mitigation_strategies:
+  - "Comprehensive testing and validation"
+  - "Multiple AI model fallbacks"
+  - "Strong security scanning and review processes"
+  - "Competitive intelligence and rapid iteration"
+  - "Knowledge documentation and team redundancy"
+```
+
+---
+
+**Document Status**: ✅ Ready for Stakeholder Review  
+**Next Review Date**: 2025-08-20  
+**Approval Required From**: Engineering Lead, Design Lead, Security Lead, Product Owner  
+
+**Change Log**:
+- v2.0 (2025-08-13): Complete rewrite with optimized structure and stakeholder questions
+- v1.0 (2025-08-01): Initial draft

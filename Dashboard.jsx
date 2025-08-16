@@ -1,0 +1,388 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Progress } from './ui/progress';
+import { 
+  Activity, 
+  Code, 
+  Users, 
+  Zap, 
+  Clock, 
+  CheckCircle, 
+  AlertCircle,
+  TrendingUp,
+  GitBranch,
+  Bot
+} from 'lucide-react';
+
+const Dashboard = ({ onNavigate }) => {
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    activeFeatures: 0,
+    completedToday: 0,
+    successRate: 0,
+    averageTime: 0,
+    agentsActive: 0
+  });
+  
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [quickActions, setQuickActions] = useState([]);
+  const [systemHealth, setSystemHealth] = useState({
+    status: 'healthy',
+    services: {}
+  });
+
+  useEffect(() => {
+    fetchDashboardData();
+    const interval = setInterval(fetchDashboardData, 30000); // Update every 30s
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      // Simulate API calls
+      await Promise.all([
+        fetchStats(),
+        fetchRecentActivity(),
+        fetchSystemHealth()
+      ]);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    }
+  };
+
+  const fetchStats = async () => {
+    // Simulate stats API
+    setStats({
+      totalProjects: 12,
+      activeFeatures: 5,
+      completedToday: 8,
+      successRate: 94.5,
+      averageTime: 3.2,
+      agentsActive: 6
+    });
+  };
+
+  const fetchRecentActivity = async () => {
+    // Simulate recent activity
+    setRecentActivity([
+      {
+        id: 1,
+        type: 'feature_completed',
+        title: 'User Authentication System',
+        time: '2 minutes ago',
+        status: 'success',
+        icon: CheckCircle
+      },
+      {
+        id: 2,
+        type: 'feature_started',
+        title: 'Dark Mode Toggle',
+        time: '5 minutes ago',
+        status: 'in_progress',
+        icon: Clock
+      },
+      {
+        id: 3,
+        type: 'security_scan',
+        title: 'Security scan completed',
+        time: '10 minutes ago',
+        status: 'success',
+        icon: CheckCircle
+      },
+      {
+        id: 4,
+        type: 'agent_update',
+        title: 'Spark agent optimized',
+        time: '15 minutes ago',
+        status: 'info',
+        icon: Bot
+      }
+    ]);
+  };
+
+  const fetchSystemHealth = async () => {
+    setSystemHealth({
+      status: 'healthy',
+      services: {
+        database: 'healthy',
+        redis: 'healthy',
+        ollama: 'healthy',
+        agents: 'healthy'
+      }
+    });
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'success': return 'text-green-600 bg-green-100';
+      case 'in_progress': return 'text-blue-600 bg-blue-100';
+      case 'warning': return 'text-yellow-600 bg-yellow-100';
+      case 'error': return 'text-red-600 bg-red-100';
+      case 'info': return 'text-purple-600 bg-purple-100';
+      default: return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  const StatCard = ({ title, value, subtitle, icon: Icon, trend, onClick }) => (
+    <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={onClick}>
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <div className="flex items-center space-x-2">
+              <p className="text-2xl font-bold">{value}</p>
+              {trend && (
+                <Badge variant={trend > 0 ? "default" : "secondary"} className="text-xs">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  {trend > 0 ? '+' : ''}{trend}%
+                </Badge>
+              )}
+            </div>
+            {subtitle && (
+              <p className="text-xs text-muted-foreground">{subtitle}</p>
+            )}
+          </div>
+          <div className="h-8 w-8 text-muted-foreground">
+            <Icon className="h-8 w-8" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Welcome back! Here's what's happening with your AI development assistant.
+          </p>
+        </div>
+        <div className="flex space-x-2">
+          <Button onClick={() => onNavigate('code')}>
+            <Code className="w-4 h-4 mr-2" />
+            New Feature
+          </Button>
+          <Button variant="outline" onClick={() => onNavigate('agents')}>
+            <Bot className="w-4 h-4 mr-2" />
+            View Agents
+          </Button>
+        </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          title="Total Projects"
+          value={stats.totalProjects}
+          subtitle="Active repositories"
+          icon={GitBranch}
+          trend={12}
+          onClick={() => onNavigate('projects')}
+        />
+        <StatCard
+          title="Active Features"
+          value={stats.activeFeatures}
+          subtitle="In development"
+          icon={Activity}
+          trend={-5}
+          onClick={() => onNavigate('code')}
+        />
+        <StatCard
+          title="Completed Today"
+          value={stats.completedToday}
+          subtitle="Features delivered"
+          icon={CheckCircle}
+          trend={25}
+        />
+        <StatCard
+          title="Success Rate"
+          value={`${stats.successRate}%`}
+          subtitle="Last 30 days"
+          icon={TrendingUp}
+          trend={2.1}
+        />
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Recent Activity */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Activity className="w-5 h-5 mr-2" />
+              Recent Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivity.map((activity) => {
+                const Icon = activity.icon;
+                return (
+                  <div key={activity.id} className="flex items-center space-x-4">
+                    <div className={`p-2 rounded-full ${getStatusColor(activity.status)}`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {activity.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {activity.time}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      {activity.type.replace('_', ' ')}
+                    </Badge>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* System Health */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Zap className="w-5 h-5 mr-2" />
+              System Health
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Overall Status</span>
+              <Badge variant={systemHealth.status === 'healthy' ? 'default' : 'destructive'}>
+                {systemHealth.status}
+              </Badge>
+            </div>
+            
+            {Object.entries(systemHealth.services).map(([service, status]) => (
+              <div key={service} className="flex items-center justify-between">
+                <span className="text-sm capitalize">{service}</span>
+                <div className="flex items-center space-x-2">
+                  <div className={`w-2 h-2 rounded-full ${
+                    status === 'healthy' ? 'bg-green-500' : 'bg-red-500'
+                  }`} />
+                  <span className="text-xs text-muted-foreground">{status}</span>
+                </div>
+              </div>
+            ))}
+            
+            <div className="pt-4 border-t">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm">Active Agents</span>
+                <span className="text-sm font-medium">{stats.agentsActive}/6</span>
+              </div>
+              <Progress value={(stats.agentsActive / 6) * 100} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Button 
+              variant="outline" 
+              className="h-20 flex-col"
+              onClick={() => onNavigate('code')}
+            >
+              <Code className="w-6 h-6 mb-2" />
+              Generate Code
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-20 flex-col"
+              onClick={() => onNavigate('agents')}
+            >
+              <Bot className="w-6 h-6 mb-2" />
+              View Agents
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-20 flex-col"
+              onClick={() => onNavigate('projects')}
+            >
+              <GitBranch className="w-6 h-6 mb-2" />
+              Manage Projects
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-20 flex-col"
+              onClick={() => onNavigate('settings')}
+            >
+              <Users className="w-6 h-6 mb-2" />
+              Settings
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Performance Metrics */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Performance Metrics</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Average Generation Time</span>
+              <span className="text-sm font-medium">{stats.average
+              <span className="text-sm font-medium">{stats.averageTime}m</span>
+            </div>
+            <Progress value={75} className="h-2" />
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Success Rate</span>
+              <span className="text-sm font-medium">{stats.successRate}%</span>
+            </div>
+            <Progress value={stats.successRate} className="h-2" />
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Agent Efficiency</span>
+              <span className="text-sm font-medium">92%</span>
+            </div>
+            <Progress value={92} className="h-2" />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Usage Statistics</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div>
+                <p className="text-2xl font-bold text-blue-600">247</p>
+                <p className="text-xs text-muted-foreground">Features Generated</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-green-600">15.2k</p>
+                <p className="text-xs text-muted-foreground">Lines of Code</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-purple-600">98%</p>
+                <p className="text-xs text-muted-foreground">Test Coverage</p>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-orange-600">4.8</p>
+                <p className="text-xs text-muted-foreground">Avg Rating</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;

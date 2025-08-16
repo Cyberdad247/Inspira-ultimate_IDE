@@ -1,0 +1,1253 @@
+# 🎨 HiveIDE UX/UI Specifications v2.0
+
+**Document ID**: UX-HIVE-2025-001  
+**Created**: 2025-08-13  
+**Last Updated**: 2025-08-13  
+**Status**: Active  
+**Owner**: Design Team (Sally - UX Expert Agent)  
+**Stakeholders**: Product, Engineering, User Research  
+
+---
+
+## 📋 Executive Summary
+
+HiveIDE's interface embodies the principle of **"Invisible Intelligence"** - powerful AI capabilities that feel natural and unobtrusive. The design prioritizes developer flow state, progressive disclosure of complexity, and trust-building through transparency.
+
+### Design Philosophy
+- **Developer-First**: Every interaction optimized for coding workflows
+- **Progressive Complexity**: Simple by default, powerful when needed
+- **Transparent AI**: Clear visibility into AI decision-making
+- **Contextual Intelligence**: Interface adapts to user behavior and project state
+
+---
+
+## 👥 User Personas & Journey Mapping
+
+### Primary Persona: Alex (Senior Full-Stack Developer)
+
+#### User Journey: Feature Development Flow
+```mermaid
+journey
+    title Alex's Feature Development Journey
+    section Discovery
+      Open HiveIDE: 5: Alex
+      Review project context: 4: Alex
+      Check recent activity: 3: Alex
+    section Planning
+      Describe feature in NL: 5: Alex
+      Review AI-generated plan: 4: Alex
+      Approve/modify approach: 5: Alex
+    section Development
+      Monitor AI progress: 4: Alex
+      Review generated code: 5: Alex
+      Run tests automatically: 5: Alex
+    section Review
+      Check AI code review: 4: Alex
+      Address feedback: 3: Alex
+      Approve for merge: 5: Alex
+```
+
+#### Key User Stories
+```yaml
+story_001:
+  as: "Senior Developer"
+  i_want: "to quickly understand what the AI is doing"
+  so_that: "I can maintain control and trust in the development process"
+  acceptance_criteria:
+    - "Real-time progress indicators for all AI operations"
+    - "Expandable details for each AI decision"
+    - "Ability to interrupt and redirect AI at any time"
+
+story_002:
+  as: "Senior Developer"
+  i_want: "to see the full context the AI is using"
+  so_that: "I can verify it has the right information"
+  acceptance_criteria:
+    - "Context panel showing files, patterns, and knowledge used"
+    - "Confidence scores for each piece of context"
+    - "Ability to add/remove context manually"
+
+story_003:
+  as: "Senior Developer"
+  i_want: "to customize AI behavior for my project"
+  so_that: "the generated code matches our team standards"
+  acceptance_criteria:
+    - "Project-specific style and pattern configuration"
+    - "Custom rule sets and preferences"
+    - "Team template sharing"
+```
+
+### Secondary Persona: Morgan (Startup CTO)
+
+#### User Journey: Team Productivity Optimization
+```mermaid
+journey
+    title Morgan's Team Management Journey
+    section Setup
+      Configure team workspace: 4: Morgan
+      Set coding standards: 5: Morgan
+      Invite team members: 4: Morgan
+    section Monitoring
+      Review team velocity: 5: Morgan
+      Check code quality metrics: 4: Morgan
+      Identify bottlenecks: 3: Morgan
+    section Optimization
+      Adjust AI settings: 4: Morgan
+      Share successful patterns: 5: Morgan
+      Train junior developers: 5: Morgan
+```
+
+---
+
+## 🎨 Visual Design System
+
+### Brand Identity
+```yaml
+brand_personality:
+  - "Intelligent but not intimidating"
+  - "Professional yet approachable"
+  - "Cutting-edge but reliable"
+  - "Powerful but simple"
+
+visual_metaphors:
+  - "Constellation": Connected intelligence (agents working together)
+  - "Flow": Smooth, uninterrupted development process
+  - "Layers": Progressive disclosure of complexity
+  - "Pulse": Living, breathing AI assistance
+```
+
+### Color Palette
+```css
+/* Primary Colors */
+:root {
+  /* Brand Colors */
+  --hive-primary: #6366f1;        /* Indigo - Intelligence */
+  --hive-primary-light: #818cf8;
+  --hive-primary-dark: #4f46e5;
+  
+  /* Secondary Colors */
+  --hive-secondary: #10b981;      /* Emerald - Success/Growth */
+  --hive-accent: #f59e0b;         /* Amber - Attention/Warning */
+  --hive-danger: #ef4444;         /* Red - Error/Critical */
+  
+  /* Neutral Colors */
+  --hive-gray-50: #f9fafb;
+  --hive-gray-100: #f3f4f6;
+  --hive-gray-200: #e5e7eb;
+  --hive-gray-300: #d1d5db;
+  --hive-gray-400: #9ca3af;
+  --hive-gray-500: #6b7280;
+  --hive-gray-600: #4b5563;
+  --hive-gray-700: #374151;
+  --hive-gray-800: #1f2937;
+  --hive-gray-900: #111827;
+  
+  /* Dark Mode */
+  --hive-dark-bg: #0f172a;        /* Slate 900 */
+  --hive-dark-surface: #1e293b;   /* Slate 800 */
+  --hive-dark-border: #334155;    /* Slate 700 */
+  --hive-dark-text: #f1f5f9;      /* Slate 100 */
+  
+  /* Semantic Colors */
+  --hive-success: #10b981;
+  --hive-warning: #f59e0b;
+  --hive-error: #ef4444;
+  --hive-info: #3b82f6;
+  
+  /* AI Status Colors */
+  --hive-ai-thinking: #8b5cf6;    /* Purple - Processing */
+  --hive-ai-confident: #10b981;   /* Green - High confidence */
+  --hive-ai-uncertain: #f59e0b;   /* Amber - Low confidence */
+  --hive-ai-error: #ef4444;       /* Red - Error state */
+}
+```
+
+### Typography
+```css
+/* Font Stack */
+:root {
+  /* Primary Font - UI Text */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  
+  /* Code Font - Monospace */
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+  
+  /* Display Font - Headers */
+  --font-display: 'Cal Sans', 'Inter', sans-serif;
+}
+
+/* Typography Scale */
+.text-xs { font-size: 0.75rem; line-height: 1rem; }      /* 12px */
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }  /* 14px */
+.text-base { font-size: 1rem; line-height: 1.5rem; }     /* 16px */
+.text-lg { font-size: 1.125rem; line-height: 1.75rem; }  /* 18px */
+.text-xl { font-size: 1.25rem; line-height: 1.75rem; }   /* 20px */
+.text-2xl { font-size: 1.5rem; line-height: 2rem; }      /* 24px */
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; } /* 30px */
+.text-4xl { font-size: 2.25rem; line-height: 2.5rem; }   /* 36px */
+```
+
+### Spacing & Layout
+```css
+/* Spacing Scale (Tailwind-based) */
+:root {
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+}
+
+/* Layout Grid */
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* Responsive Breakpoints */
+@media (min-width: 640px) { /* sm */ }
+@media (min-width: 768px) { /* md */ }
+@media (min-width: 1024px) { /* lg */ }
+@media (min-width: 1280px) { /* xl */ }
+@media (min-width: 1536px) { /* 2xl */ }
+```
+
+---
+
+## 🏗️ Component Library
+
+### Core Components
+
+#### 1. AI Status Indicator
+```typescript
+interface AIStatusProps {
+  status: 'idle' | 'thinking' | 'generating' | 'testing' | 'complete' | 'error';
+  confidence?: number;
+  message?: string;
+  details?: string[];
+}
+
+// Visual States:
+// idle: Gray pulse, "Ready"
+// thinking: Purple pulse, "Analyzing..."
+// generating: Blue progress, "Generating code..."
+// testing: Amber spinner, "Running tests..."
+// complete: Green checkmark, "Complete"
+// error: Red X, "Error occurred"
+```
+
+#### 2. Context Panel
+```typescript
+interface ContextPanelProps {
+  files: ContextFile[];
+  patterns: Pattern[];
+  knowledge: KnowledgeNode[];
+  confidence: number;
+  onAddContext: (item: ContextItem) => void;
+  onRemoveContext: (id: string) => void;
+}
+
+// Features:
+// - Expandable sections for each context type
+// - Confidence scores with color coding
+// - Drag-and-drop to reorder importance
+// - Search and filter capabilities
+```
+
+#### 3. Code Diff Viewer
+```typescript
+interface CodeDiffProps {
+  original: string;
+  modified: string;
+  language: string;
+  showLineNumbers?: boolean;
+  highlightChanges?: boolean;
+  onAcceptChange?: (lineNumber: number) => void;
+  onRejectChange?: (lineNumber: number) => void;
+}
+
+// Features:
+// - Side-by-side and unified diff views
+// - Syntax highlighting for multiple languages
+// - Inline comments and suggestions
+// - Accept/reject individual changes
+```
+
+#### 4. Agent Activity Feed
+```typescript
+interface AgentActivityProps {
+  agents: Agent[];
+  activities: Activity[];
+  realTime?: boolean;
+  maxItems?: number;
+}
+
+// Features:
+// - Real-time activity stream
+// - Agent avatars and status
+// - Expandable activity details
+// - Filter by agent or activity type
+```
+
+#### 5. Natural Language Input
+```typescript
+interface NLInputProps {
+  placeholder: string;
+  onSubmit: (text: string) => void;
+  suggestions?: string[];
+  context?: ProjectContext;
+  aiAssisted?: boolean;
+}
+
+// Features:
+// - Auto-complete based on project context
+// - Syntax highlighting for technical terms
+// - Voice input support
+// - Template suggestions
+```
+
+### Interaction Patterns
+
+#### Progressive Disclosure
+```yaml
+level_1_basic:
+  - "Simple NL input field"
+  - "Basic status indicator"
+  - "Generated code preview"
+
+level_2_intermediate:
+  - "Context panel with file references"
+  - "Agent activity feed"
+  - "Test results summary"
+
+level_3_advanced:
+  - "Detailed AI reasoning explanation"
+  - "Custom agent configuration"
+  - "Performance metrics and optimization"
+```
+
+#### Feedback Mechanisms
+```yaml
+immediate_feedback:
+  - "Visual state changes (loading, success, error)"
+  - "Progress indicators with time estimates"
+  - "Real-time validation and suggestions"
+
+contextual_feedback:
+  - "Tooltips explaining AI decisions"
+  - "Confidence scores with explanations"
+  - "Alternative suggestions when confidence is low"
+
+learning_feedback:
+  - "User preference learning from interactions"
+  - "Pattern recognition from successful workflows"
+  - "Adaptive interface based on usage patterns"
+```
+
+---
+
+## 📱 Screen Layouts & Wireframes
+
+### Main Application Layout
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ Header: Logo | Project Name | User Menu | Settings | Help       │
+├─────────────────────────────────────────────────────────────────┤
+│ ┌─────────────┐ ┌─────────────────────────┐ ┌─────────────────┐ │
+│ │             │ │                         │ │                 │ │
+│ │   Sidebar   │ │      Main Content       │ │   Right Panel   │ │
+│ │             │ │                         │ │                 │ │
+│ │ - Projects  │ │  ┌─────────────────────┐ │ │ - AI Status     │ │
+│ │ - Recent    │ │  │                     │ │ │ - Context       │ │
+│ │ - Agents    │ │  │   Code Editor       │ │ │ - Activity      │ │
+│ │ - Settings  │ │  │   (Monaco)          │ │ │ - Chat          │ │
+│ │             │ │  │                     │ │ │                 │ │
+│ │             │ │  └─────────────────────┘ │ │                 │ │
+│ │             │ │                         │ │                 │ │
+│ │             │ │  ┌─────────────────────┐ │ │                 │ │
+│ │             │ │  │   NL Input Panel    │ │ │                 │ │
+│ │             │ │  └─────────────────────┘ │ │                 │ │
+│ └─────────────┘ └─────────────────────────┘ └─────────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│ Footer: Status Bar | Progress | Notifications | Quick Actions   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Natural Language Input Panel (Detailed)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 💬 Describe what you want to build...                          │
+├─────────────────────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────────────────────┐ │
+│ │ Add a user authentication system with JWT tokens and       │ │
+│ │ password reset functionality                                │ │
+│ │                                                             │ │
+│ │ [Suggestions: "Include email verification", "Add 2FA"]     │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│ 🎯 Complexity: Medium | ⏱️ Est. Time: 4-6 min | 💰 Cost: $0    │
+├─────────────────────────────────────────────────────────────────┤
+│ 📋 Context Used:                                               │
+│ • auth.config.js (JWT settings)                               │
+│ • user.model.js (User schema)                                 │
+│ • Similar patterns from 3 other projects                      │
+├─────────
+
+```
+├─────────────────────────────────────────────────────────────────┤
+│ 📋 Context Used:                                               │
+│ • auth.config.js (JWT settings)                               │
+│ • user.model.js (User schema)                                 │
+│ • Similar patterns from 3 other projects                      │
+├─────────────────────────────────────────────────────────────────┤
+│ ⚙️ Options:                                                    │
+│ ☑️ Include tests    ☑️ Add documentation    ☐ Skip validation  │
+│ ☑️ Follow team style    ☐ Use experimental features           │
+├─────────────────────────────────────────────────────────────────┤
+│                    [Generate] [Save as Template]               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### AI Status & Progress Panel
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 🤖 AI Agents Status                                            │
+├─────────────────────────────────────────────────────────────────┤
+│ ┌─ Conductor ──────────────────────────────────────────────────┐ │
+│ │ 🟢 Planning authentication flow                             │ │
+│ │ Progress: ████████░░ 80%                                    │ │
+│ │ Next: Generate backend routes                               │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│ ┌─ Spark ──────────────────────────────────────────────────────┐ │
+│ │ 🟡 Generating auth middleware                               │ │
+│ │ Progress: ███░░░░░░░ 30%                                    │ │
+│ │ Confidence: 92%                                             │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│ ┌─ Sentinel ───────────────────────────────────────────────────┐ │
+│ │ ⏸️ Waiting for code generation                              │ │
+│ │ Will scan for: JWT vulnerabilities, auth bypasses          │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│ ┌─ Oracle ─────────────────────────────────────────────────────┐ │
+│ │ 🟢 Retrieved 15 auth patterns                               │ │
+│ │ Confidence: 94% match to requirements                       │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│ 📊 Overall Progress: 65% | ⏱️ ETA: 2m 15s                     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Code Generation Results Panel
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 📝 Generated Files (7)                              [Expand All] │
+├─────────────────────────────────────────────────────────────────┤
+│ ┌─ backend/auth/middleware.js ─────────────────────────────────┐ │
+│ │ ✅ Generated | 🧪 Tests: 5/5 pass | 📊 Coverage: 95%       │ │
+│ │ + 45 lines | - 0 lines | Modified: 1 function             │ │
+│ │                                              [View] [Edit]  │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│ ┌─ backend/routes/auth.js ─────────────────────────────────────┐ │
+│ │ ✅ Generated | 🧪 Tests: 8/8 pass | 📊 Coverage: 92%       │ │
+│ │ + 78 lines | - 0 lines | New file                          │ │
+│ │                                              [View] [Edit]  │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+│                                                                 │
+│ ┌─ frontend/components/LoginForm.tsx ─────────────────────────┐ │
+│ │ ⚠️ Generated | 🧪 Tests: 3/4 pass | 📊 Coverage: 87%       │ │
+│ │ + 92 lines | - 0 lines | New file                          │ │
+│ │ Issue: Missing email validation test                        │ │
+│ │                                    [View] [Fix] [Ignore]    │ │
+│ └─────────────────────────────────────────────────────────────┘ │
+├─────────────────────────────────────────────────────────────────┤
+│ 🔍 AI Review Summary:                                          │
+│ • ✅ Security: No vulnerabilities found                        │
+│ • ✅ Performance: Efficient JWT handling                       │
+│ • ⚠️ Style: 2 minor formatting issues                          │
+│ • ✅ Tests: 16/17 tests passing                                │
+├─────────────────────────────────────────────────────────────────┤
+│              [Accept All] [Review Changes] [Regenerate]        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🎭 Screen States & Interactions
+
+### Loading States
+
+#### 1. Initial Loading
+```yaml
+state: "app_startup"
+visual:
+  - "HiveIDE logo with subtle pulse animation"
+  - "Loading progress bar with status text"
+  - "Background: Gradient from dark to brand color"
+duration: "2-5 seconds"
+messages:
+  - "Initializing AI agents..."
+  - "Loading project context..."
+  - "Connecting to knowledge base..."
+  - "Ready to code!"
+```
+
+#### 2. AI Processing
+```yaml
+state: "ai_thinking"
+visual:
+  - "Animated constellation of connected dots"
+  - "Agent avatars with thinking indicators"
+  - "Progress percentage with time estimate"
+duration: "10 seconds - 5 minutes"
+messages:
+  - "Analyzing your request..."
+  - "Searching knowledge patterns..."
+  - "Generating code structure..."
+  - "Creating tests..."
+  - "Running security checks..."
+```
+
+#### 3. Code Generation
+```yaml
+state: "generating_code"
+visual:
+  - "Typewriter effect in code editor"
+  - "File tree expanding with new files"
+  - "Real-time syntax highlighting"
+duration: "30 seconds - 2 minutes"
+interaction:
+  - "Pause/resume generation"
+  - "Modify generation parameters"
+  - "Add additional requirements"
+```
+
+### Error States
+
+#### 1. Generation Failed
+```yaml
+state: "generation_error"
+visual:
+  - "Red error icon with shake animation"
+  - "Clear error message with suggested actions"
+  - "Option to retry or modify request"
+layout: |
+  ┌─────────────────────────────────────────┐
+  │ ❌ Code Generation Failed               │
+  ├─────────────────────────────────────────┤
+  │ The AI couldn't generate the requested  │
+  │ authentication system due to:           │
+  │                                         │
+  │ • Conflicting requirements detected     │
+  │ • Missing project dependencies          │
+  │                                         │
+  │ Suggestions:                            │
+  │ • Clarify authentication method         │
+  │ • Install required packages first       │
+  │                                         │
+  │    [Retry] [Modify Request] [Get Help]  │
+  └─────────────────────────────────────────┘
+```
+
+#### 2. Test Failures
+```yaml
+state: "test_failed"
+visual:
+  - "Amber warning with test failure details"
+  - "Expandable error logs"
+  - "Suggested fixes from AI"
+layout: |
+  ┌─────────────────────────────────────────┐
+  │ ⚠️ Tests Failed (3/16 failing)          │
+  ├─────────────────────────────────────────┤
+  │ LoginForm.test.tsx:                     │
+  │ ✗ should validate email format          │
+  │ ✗ should handle network errors          │
+  │                                         │
+  │ auth.test.js:                           │
+  │ ✗ should reject invalid JWT tokens      │
+  │                                         │
+  │ 🤖 AI Suggestions:                      │
+  │ • Add email regex validation            │
+  │ • Mock network error responses          │
+  │ • Update JWT secret configuration       │
+  │                                         │
+  │    [Auto-Fix] [Manual Review] [Ignore]  │
+  └─────────────────────────────────────────┘
+```
+
+### Success States
+
+#### 1. Generation Complete
+```yaml
+state: "generation_success"
+visual:
+  - "Green checkmark with celebration animation"
+  - "Summary of generated files and tests"
+  - "Quality metrics and confidence scores"
+layout: |
+  ┌─────────────────────────────────────────┐
+  │ ✅ Authentication System Generated!     │
+  ├─────────────────────────────────────────┤
+  │ 📁 7 files created                      │
+  │ 🧪 16/16 tests passing                  │
+  │ 📊 95% code coverage                    │
+  │ 🔒 No security issues found             │
+  │ ⏱️ Completed in 3m 42s                  │
+  │                                         │
+  │ Ready to:                               │
+  │ • Review generated code                 │
+  │ • Create pull request                   │
+  │ • Deploy to staging                     │
+  │                                         │
+  │    [Review Code] [Create PR] [Deploy]   │
+  └─────────────────────────────────────────┘
+```
+
+### Empty States
+
+#### 1. New Project
+```yaml
+state: "project_empty"
+visual:
+  - "Welcoming illustration with call-to-action"
+  - "Quick start templates and examples"
+  - "Onboarding tips and tutorials"
+layout: |
+  ┌─────────────────────────────────────────┐
+  │        🚀 Welcome to HiveIDE!           │
+  ├─────────────────────────────────────────┤
+  │                                         │
+  │     [Illustration: Developer + AI]      │
+  │                                         │
+  │ Start building with AI assistance:      │
+  │                                         │
+  │ 📝 Describe what you want to build      │
+  │ 🤖 AI agents collaborate to create it   │
+  │ ✅ Review, test, and deploy             │
+  │                                         │
+  │ Quick starts:                           │
+  │ • "Create a React todo app"             │
+  │ • "Build a REST API with auth"          │
+  │ • "Add dark mode to my site"            │
+  │                                         │
+  │         [Start Building] [Tutorial]     │
+  └─────────────────────────────────────────┘
+```
+
+#### 2. No Recent Activity
+```yaml
+state: "activity_empty"
+visual:
+  - "Subtle illustration suggesting action"
+  - "Recent project suggestions"
+  - "Community patterns and templates"
+layout: |
+  ┌─────────────────────────────────────────┐
+  │ 📊 Activity Feed                        │
+  ├─────────────────────────────────────────┤
+  │                                         │
+  │        No recent activity               │
+  │                                         │
+  │ Start a new feature or check out:       │
+  │                                         │
+  │ 🔥 Trending patterns:                   │
+  │ • Authentication with NextAuth.js       │
+  │ • Real-time chat with Socket.io         │
+  │ • Payment integration with Stripe       │
+  │                                         │
+  │ 📚 Your recent projects:                │
+  │ • E-commerce Platform (2 days ago)      │
+  │ • Task Manager App (1 week ago)         │
+  │                                         │
+  │    [Browse Patterns] [Open Project]     │
+  └─────────────────────────────────────────┘
+```
+
+---
+
+## 🎬 Animations & Micro-interactions
+
+### Core Animation Principles
+```yaml
+timing_functions:
+  ease_out: "cubic-bezier(0.25, 0.46, 0.45, 0.94)"  # Natural deceleration
+  ease_in_out: "cubic-bezier(0.4, 0, 0.2, 1)"       # Smooth transitions
+  bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)"  # Playful feedback
+
+durations:
+  micro: "150ms"      # Button hovers, small state changes
+  short: "300ms"      # Panel transitions, modal open/close
+  medium: "500ms"     # Page transitions, complex animations
+  long: "800ms"       # Loading states, celebration animations
+
+easing_guidelines:
+  - "Fast out, slow in for user-initiated actions"
+  - "Slow out, fast in for system-initiated changes"
+  - "Consistent timing across similar interactions"
+```
+
+### Specific Animations
+
+#### 1. AI Thinking Indicator
+```css
+@keyframes ai-thinking {
+  0% { 
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% { 
+    transform: scale(1);
+    opacity: 0.6;
+  }
+}
+
+.ai-thinking {
+  animation: ai-thinking 2s ease-in-out infinite;
+}
+```
+
+#### 2. Code Generation Typewriter
+```css
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-cursor {
+  from, to { border-color: transparent; }
+  50% { border-color: var(--hive-primary); }
+}
+
+.code-generation {
+  overflow: hidden;
+  border-right: 2px solid var(--hive-primary);
+  white-space: nowrap;
+  animation: 
+    typewriter 3s steps(40, end),
+    blink-cursor 0.75s step-end infinite;
+}
+```
+
+#### 3. Success Celebration
+```css
+@keyframes success-bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+.success-icon {
+  animation: success-bounce 1s ease-in-out;
+}
+```
+
+#### 4. Context Panel Slide
+```css
+.context-panel {
+  transform: translateX(100%);
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.context-panel.open {
+  transform: translateX(0);
+}
+
+.context-panel.closing {
+  transform: translateX(100%);
+}
+```
+
+### Micro-interactions
+
+#### Button Interactions
+```css
+.button {
+  position: relative;
+  overflow:
+```css
+.button {
+  position: relative;
+  overflow: hidden;
+  transition: all 150ms ease-out;
+  transform: translateY(0);
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.button:active {
+  transform: translateY(0);
+  transition: all 50ms ease-in;
+}
+
+/* Ripple effect */
+.button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 300ms, height 300ms;
+}
+
+.button:active::after {
+  width: 300px;
+  height: 300px;
+}
+```
+
+#### Input Focus States
+```css
+.input-field {
+  border: 2px solid var(--hive-gray-300);
+  transition: all 200ms ease-out;
+}
+
+.input-field:focus {
+  border-color: var(--hive-primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  transform: scale(1.01);
+}
+
+.input-field:focus + .input-label {
+  color: var(--hive-primary);
+  transform: translateY(-8px) scale(0.85);
+}
+```
+
+---
+
+## 📱 Responsive Design Strategy
+
+### Breakpoint System
+```css
+/* Mobile-first approach */
+:root {
+  --breakpoint-sm: 640px;   /* Small tablets */
+  --breakpoint-md: 768px;   /* Tablets */
+  --breakpoint-lg: 1024px;  /* Small laptops */
+  --breakpoint-xl: 1280px;  /* Desktops */
+  --breakpoint-2xl: 1536px; /* Large screens */
+}
+
+/* Layout adaptations */
+@media (max-width: 768px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+      "header"
+      "content"
+      "sidebar"
+      "footer";
+  }
+  
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    transform: translateY(100%);
+    transition: transform 300ms ease-out;
+  }
+  
+  .sidebar.open {
+    transform: translateY(0);
+  }
+}
+```
+
+### Mobile-Specific Interactions
+```yaml
+touch_targets:
+  minimum_size: "44px x 44px"
+  spacing: "8px minimum between targets"
+  
+gestures:
+  swipe_left: "Open context panel"
+  swipe_right: "Close panels"
+  pull_down: "Refresh project context"
+  long_press: "Show context menu"
+  
+mobile_optimizations:
+  - "Larger touch targets for primary actions"
+  - "Simplified navigation with bottom tab bar"
+  - "Collapsible panels to maximize code view"
+  - "Voice input for natural language requests"
+```
+
+---
+
+## ♿ Accessibility Guidelines
+
+### WCAG 2.1 AA Compliance
+```yaml
+color_contrast:
+  normal_text: "4.5:1 minimum ratio"
+  large_text: "3:1 minimum ratio"
+  ui_components: "3:1 minimum ratio"
+  
+keyboard_navigation:
+  - "All interactive elements accessible via keyboard"
+  - "Visible focus indicators on all focusable elements"
+  - "Logical tab order throughout interface"
+  - "Skip links for main content areas"
+  
+screen_reader_support:
+  - "Semantic HTML structure with proper headings"
+  - "ARIA labels for complex UI components"
+  - "Live regions for dynamic content updates"
+  - "Alternative text for all meaningful images"
+```
+
+### Accessibility Features
+```typescript
+// Screen reader announcements for AI status
+const announceAIStatus = (status: string, details?: string) => {
+  const announcement = `AI status: ${status}. ${details || ''}`;
+  
+  // Use aria-live region
+  const liveRegion = document.getElementById('ai-status-live');
+  if (liveRegion) {
+    liveRegion.textContent = announcement;
+  }
+};
+
+// Keyboard shortcuts
+const keyboardShortcuts = {
+  'Ctrl+Enter': 'Submit natural language request',
+  'Ctrl+/': 'Toggle command palette',
+  'Ctrl+Shift+P': 'Open agent panel',
+  'Ctrl+Shift+C': 'Toggle context panel',
+  'Escape': 'Cancel current operation',
+  'F1': 'Open help documentation'
+};
+```
+
+---
+
+## 🎨 Dark Mode Implementation
+
+### Color Scheme Toggle
+```css
+/* Automatic dark mode detection */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: var(--hive-dark-bg);
+    --bg-secondary: var(--hive-dark-surface);
+    --text-primary: var(--hive-dark-text);
+    --border-color: var(--hive-dark-border);
+  }
+}
+
+/* Manual dark mode class */
+.dark {
+  --bg-primary: var(--hive-dark-bg);
+  --bg-secondary: var(--hive-dark-surface);
+  --text-primary: var(--hive-dark-text);
+  --border-color: var(--hive-dark-border);
+}
+
+/* Smooth theme transitions */
+* {
+  transition: 
+    background-color 200ms ease-out,
+    border-color 200ms ease-out,
+    color 200ms ease-out;
+}
+```
+
+### Dark Mode Specific Adjustments
+```yaml
+code_editor:
+  theme: "vs-dark"
+  background: "#0f172a"
+  selection: "#1e293b"
+  
+ai_status_colors:
+  thinking: "#a855f7"    # Brighter purple for dark mode
+  success: "#22c55e"     # Brighter green
+  error: "#f87171"       # Softer red
+  
+shadows:
+  light_mode: "0 4px 6px rgba(0, 0, 0, 0.1)"
+  dark_mode: "0 4px 6px rgba(0, 0, 0, 0.3)"
+```
+
+---
+
+## 🔧 Implementation Guidelines
+
+### Component Development Standards
+```typescript
+// Component structure template
+interface ComponentProps {
+  // Required props
+  id: string;
+  
+  // Optional props with defaults
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  
+  // Event handlers
+  onClick?: (event: MouseEvent) => void;
+  
+  // Accessibility
+  'aria-label'?: string;
+  'aria-describedby'?: string;
+}
+
+const Component: React.FC<ComponentProps> = ({
+  id,
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  onClick,
+  'aria-label': ariaLabel,
+  'aria-describedby': ariaDescribedBy,
+  ...props
+}) => {
+  return (
+    <button
+      id={id}
+      className={cn(
+        'base-button-styles',
+        variantStyles[variant],
+        sizeStyles[size],
+        disabled && 'disabled-styles'
+      )}
+      disabled={disabled}
+      onClick={onClick}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
+      {...props}
+    />
+  );
+};
+```
+
+### CSS Architecture
+```scss
+// BEM methodology with utility classes
+.component {
+  // Base styles
+  
+  &__element {
+    // Element styles
+  }
+  
+  &--modifier {
+    // Modifier styles
+  }
+  
+  &.is-active {
+    // State styles
+  }
+}
+
+// Utility classes for common patterns
+.u-visually-hidden { /* Screen reader only */ }
+.u-truncate { /* Text truncation */ }
+.u-focus-ring { /* Consistent focus styles */ }
+```
+
+### Performance Considerations
+```yaml
+optimization_strategies:
+  - "Lazy load non-critical components"
+  - "Use CSS containment for isolated components"
+  - "Implement virtual scrolling for large lists"
+  - "Optimize animations with transform and opacity"
+  - "Use CSS custom properties for theme switching"
+  
+bundle_splitting:
+  - "Core UI components in main bundle"
+  - "Advanced features in separate chunks"
+  - "Third-party libraries in vendor bundle"
+  
+image_optimization:
+  - "WebP format with fallbacks"
+  - "Responsive images with srcset"
+  - "Lazy loading for below-fold content"
+```
+
+---
+
+## 📊 Design System Metrics
+
+### Component Coverage
+```yaml
+core_components: 24
+  - "Button (5 variants)"
+  - "Input (8 types)"
+  - "Modal (3 sizes)"
+  - "Tooltip (4 positions)"
+  - "Progress (3 styles)"
+  - "Status indicator (6 states)"
+  - "Code editor (Monaco wrapper)"
+  - "Diff viewer (side-by-side/unified)"
+
+layout_components: 12
+  - "Grid system"
+  - "Flex utilities"
+  - "Container"
+  - "Sidebar"
+  - "Header"
+  - "Footer"
+
+specialized_components: 18
+  - "AI status panel"
+  - "Agent activity feed"
+  - "Context browser"
+  - "Natural language input"
+  - "Code generation viewer"
+  - "Test results panel"
+```
+
+### Design Token Coverage
+```yaml
+colors: 45
+  - "Brand colors (5)"
+  - "Semantic colors (8)"
+  - "Gray scale (10)"
+  - "AI status colors (6)"
+  - "Syntax highlighting (16)"
+
+typography: 12
+  - "Font families (3)"
+  - "Font sizes (8)"
+  - "Line heights (4)"
+
+spacing: 16
+  - "Base scale (0.25rem increments)"
+  - "Component-specific spacing"
+
+shadows: 8
+  - "Elevation levels (4 light, 4 dark)"
+
+borders: 6
+  - "Radius values (4)"
+  - "Width values (2)"
+```
+
+---
+
+## 🚀 Future Enhancements
+
+### Planned UI/UX Improvements
+```yaml
+phase_2_features:
+  - "Voice input with visual feedback"
+  - "Gesture-based navigation"
+  - "Collaborative cursors for team coding"
+  - "AR/VR interface exploration"
+  
+phase_3_features:
+  - "AI-generated UI components"
+  - "Adaptive interface based on user behavior"
+  - "Biometric feedback integration"
+  - "Brain-computer interface research"
+
+accessibility_roadmap:
+  - "Voice control for all functions"
+  - "Eye tracking navigation"
+  - "Haptic feedback for status changes"
+  - "High contrast mode improvements"
+```
+
+### Emerging Technologies
+```yaml
+web_standards:
+  - "CSS Container Queries for responsive components"
+  - "CSS Cascade Layers for style organization"
+  - "Web Components for framework-agnostic design"
+  - "Progressive Web App features"
+
+ai_integration:
+  - "Personalized UI layouts"
+  - "Predictive interface adjustments"
+  - "Automated accessibility improvements"
+  - "Context-aware help system"
+```
+
+---
+
+## 📋 Design Review Checklist
+
+### Pre-Development Review
+- [ ] All user stories have corresponding UI mockups
+- [ ] Accessibility requirements documented for each component
+- [ ] Responsive behavior defined for all breakpoints
+- [ ] Animation specifications include duration and easing
+- [ ] Color contrast ratios verified for WCAG compliance
+- [ ] Keyboard navigation flow documented
+- [ ] Error states and loading states designed
+- [ ] Dark mode variations created
+
+### Implementation Review
+- [ ] Components match design specifications
+- [ ] Animations perform smoothly at 60fps
+- [ ] Touch targets meet minimum size requirements
+- [ ] Focus indicators visible and consistent
+- [ ] Screen reader compatibility tested
+- [ ] Cross-browser compatibility verified
+- [ ] Performance impact assessed
+- [ ] Design tokens properly implemented
+
+### User Testing Validation
+- [ ] User flows tested with target personas
+- [ ] Accessibility tested with assistive technologies
+- [ ] Mobile usability validated on actual devices
+- [ ] Loading states tested under slow network conditions
+- [ ] Error recovery flows validated
+- [ ] Onboarding experience optimized
+
+---
+
+**Document Status**: ✅ Ready for Development  
+**Next Review Date**: 2025-08-27  
+**Approval Required From**: Design Lead, Accessibility Specialist, Frontend Lead  
+
+**Change Log**:
+- v2.0 (2025-08-13): Complete UX/UI specification with responsive design and accessibility
+- v1.0 (2025-08-01): Initial wireframes and basic component library
+
+**Related Documents**:
+- [HiveIDE PRD v2.0](./prd-v2.md)
+- [Technical Architecture Specification](./architecture.md)
+- [Component Library Documentation](./components.md)
